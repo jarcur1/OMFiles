@@ -1,0 +1,13 @@
+# Only explicitly shareable definitions and documentation belong in this repo.
+/*
+!/.gitignore
+!/README.md
+!/LICENSE
+!/RULES.md
+!/config.example.yml
+!/models.example.yml
+!/agents/
+
+/agents/*
+!/agents/*.md
+/agents/*.local.md

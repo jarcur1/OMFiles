@@ -1,0 +1,34 @@
+# Merge into the active profile's config.yml; do not replace existing settings.
+# All model selectors require your own provider access. See README.md for substitutions.
+modelRoles:
+  default: google-antigravity/gemini-3.8-flash:high
+  DEEP: openai-codex/gpt-6.1-sol:high
+  CYBER: openai-codex/gpt-6.1-sol:high
+  CODE: openai-codex/gpt-6.1-sol:high
+
+cycleOrder:
+  - default
+  - DEEP
+  - CYBER
+  - CODE
+
+# Safer sharing default: reads are automatic; writes and execution need approval.
+# The author's workflow uses yolo instead. Opt in only after reviewing RULES.md:
+#   approvalMode: yolo
+# Explicit computer prompts remain enabled in either mode.
+tools:
+  approvalMode: always-ask
+  approval:
+    computer: prompt
+
+# Retain idle agent sessions for direct follow-up through Agent Hub.
+task:
+  agentIdleTtlMs: 1200000
+
+# Optional capabilities used by the workflows. Installation/authentication is separate.
+github:
+  enabled: true
+browser:
+  enabled: true
+computer:
+  enabled: true
