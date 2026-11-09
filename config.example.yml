@@ -1,5 +1,10 @@
-# Merge into the active profile's config.yml; do not replace existing settings.
-# All model selectors require your own provider access. See README.md for substitutions.
+# Optional: merge into the active profile's config.yml; do not replace existing settings.
+# Installing or importing the omp-omfiles plugin never applies this configuration automatically.
+# All model selectors require your own provider access.
+#
+# Configuring modelRoles allows using role aliases with the /workflow command:
+#   /workflow code --model @CODE
+# By default, /workflow <mode> keeps your current manager model unless --model is specified.
 modelRoles:
   default: google-antigravity/gemini-3.8-flash:high
   DEEP: openai-codex/gpt-6.1-sol:high
@@ -13,8 +18,9 @@ cycleOrder:
   - CODE
 
 # Safer sharing default: reads are automatic; writes and execution need approval.
-# The author's workflow uses yolo instead. Opt in only after reviewing RULES.md:
-#   approvalMode: yolo
+# The author's workflow uses yolo instead. Opt in only after reviewing safety policies:
+#   tools:
+#     approvalMode: yolo
 # Explicit computer prompts remain enabled in either mode.
 tools:
   approvalMode: always-ask

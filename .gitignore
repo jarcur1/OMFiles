@@ -3,10 +3,23 @@
 !/.gitignore
 !/README.md
 !/LICENSE
-!/RULES.md
 !/config.example.yml
 !/models.example.yml
 !/agents/
+!/package.json
+!/src/
+!/test/
+!/rules/
+!/workflows/
+
+/src/*
+!/src/*.js
+/test/*
+!/test/*.test.js
+/rules/*
+!/rules/*.md
+/workflows/*
+!/workflows/*.md
 
 /agents/*
 !/agents/*.md
