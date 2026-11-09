@@ -4,6 +4,8 @@ Shareable [Oh My Pi (OMP)](https://github.com/can1357/oh-my-pi) agent definition
 
 This is a configuration pack, not an OMP fork or a provider subscription. You need OMP installed and your own access to the configured models. The model IDs reflect the author's setup; availability depends on your providers and account.
 
+**Current status:** manual configuration pack. The [plugin migration design](#plugin-migration-design-not-implemented) below describes a proposed native OMP plugin; plugin installation and `/workflow` commands are not implemented in this repository yet. Use the profile installation instructions below today.
+
 ## What is included
 
 | File | Purpose |
@@ -166,6 +168,66 @@ In the new session, ask the manager to identify the active workflow and availabl
 - **Unexpected prompts:** the shared default is deliberately `always-ask`; the author's `yolo` setting is opt-in.
 
 Verified with OMP `18.12.6`: installation into a temporary named profile, configuration loading, RPC startup with the `CODE` role, discovery of all ten named specialists (including Argon), and loading of the shared `RULES.md`. YAML parsing, specialist tool restrictions, local README links, and the Git publication allowlist were also checked. No model inference requests were made; provider authentication and successful specialist dispatch must be verified with your own account access.
+
+## Plugin migration design (not implemented)
+
+The recommended conversion is **one native OMP plugin with four selectable workflows**, rather than four separately installed plugins. This keeps shared policies, specialist definitions, and workflow state in one place.
+
+### Proposed user experience
+
+After the conversion is implemented and published, users would be able to install directly from this GitHub repository without an npm release:
+
+```sh
+# Planned installation command; not supported by this repository yet.
+omp plugin install github:jarcur1/OMFiles
+```
+
+The extension would register these proposed commands:
+
+```text
+/workflow normal
+/workflow deep
+/workflow cyber
+/workflow code
+/workflow status
+```
+
+Selecting a workflow would set explicit session state, not infer a mode from the manager's model. This matters because Deep, Cyber, and Code currently share the same manager selector. A workflow could optionally select its configured manager model without changing the user's persistent configuration.
+
+### Required repository changes
+
+1. Add a `package.json` with a package name, version, and native `omp` manifest. A configuration-only plugin can use `omp: {}`; the selectable-workflow version must declare its extension entrypoint in `omp.extensions`.
+2. Keep the ten specialist definitions in `agents/`, where native plugin discovery can load them.
+3. Split `RULES.md` into shared policies and four workflow instruction assets. Place static, always-applied policies under `rules/` with YAML frontmatter `alwaysApply: true`. A plugin's root `RULES.md` is **not** automatically loaded as a sticky rule.
+4. Implement one extension that registers the workflow commands and injects only the selected workflow's instructions alongside the shared policies. Manager-specific instructions must not be injected into specialist sessions.
+5. Extend the publication allowlist in `.gitignore` for the manifest, extension source, `rules/`, and workflow assets.
+6. Update installation, migration, update, and removal instructions once the plugin is implemented and verified. Until then, the existing manual installation remains the supported path.
+
+### Extension behavior and boundaries
+
+- Use `pi.registerCommand` for workflow selection and status. Mode transitions should wait for an idle manager session, and a failed model selection must not leave the workflow and model in inconsistent states.
+- Use `before_agent_start` to prepare the selected workflow's prompt policy while preserving OMP's base prompt and other applicable policies. Switching modes must replace the previous workflow instructions rather than accumulate conflicting mode prompts.
+- Persist the selected workflow with a namespaced `pi.appendEntry` record and reconstruct it from the current session branch on startup, resume, session switching, and branch navigation.
+- Scope manager behavior with `ctx.agent.kind`; extension factories also bind to subagent sessions. Keep each specialist's existing role and tool restrictions intact.
+- Make model mappings configurable. Resolve selectors with `ctx.models` and switch the manager with `pi.setModel` only when requested. Finding a catalog entry is not proof that a provider request will succeed.
+- Keep credentials and provider access user-managed. Merely bundling `config.yml` or `models.yml` does not apply those settings; retain the examples as opt-in setup guidance rather than silently overwrite personal files.
+- Preserve the user's approval settings, including computer prompts. Installing or selecting a workflow must not enable `yolo`, grant new authority, or authorize external actions.
+
+### Migrating existing manual installations
+
+Before enabling a future plugin release, back up your installed configuration and identify copies of this pack's `RULES.md` and agent files. User/project agent definitions can override same-name plugin agents, and manually installed rules can remain active alongside plugin rules. Merge personal changes and retire only the old OMFiles content you intend to replace; do not delete unrelated configuration.
+
+Test a fresh profile first. Verify agent discovery, command registration, each workflow selection, prompt replacement across switches, state restoration, unavailable-model handling, and preservation of approval settings. Actual model dispatch requires the user's own provider authentication and quota.
+
+### Feasibility evidence and references
+
+Temporary-package checks with OMP `18.18.2` confirmed native plugin discovery of all ten agents, an always-applied rule under `rules/`, and an extension-registered slash command. A separate passive-plugin check confirmed that `omp: {}` can load conventional rules without extension code, while root `RULES.md` and root `config.yml` are not automatically applied. Those temporary packages and profiles were removed; these checks did not implement workflow switching in OMFiles or make model inference requests.
+
+Primary OMP documentation:
+
+- [Plugin packaging, Git installation, and discovery](https://github.com/can1357/oh-my-pi/blob/main/docs/plugin-manager-installer-plumbing.md)
+- [Extension commands, prompt hooks, model selection, and session state](https://github.com/can1357/oh-my-pi/blob/main/docs/extensions.md)
+- [Rule discovery and always-apply behavior](https://github.com/can1357/oh-my-pi/blob/main/docs/rulebook-matching-pipeline.md)
 
 ## Updating and sharing safely
 
