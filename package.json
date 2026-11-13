@@ -1,0 +1,39 @@
+{
+  "name": "omp-omfiles",
+  "version": "1.0.0",
+  "description": "Selectable Normal, Deep, Cyber, and Code workflows and specialist agents for Oh My Pi.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jarcur1/OMFiles.git"
+  },
+  "files": [
+    "src/index.js",
+    "agents/code-architect.md",
+    "agents/code-builder.md",
+    "agents/code-reviewer.md",
+    "agents/code-reviewer-argon.md",
+    "agents/code-scout.md",
+    "agents/cyber-blue.md",
+    "agents/cyber-red.md",
+    "agents/gemini-professor.md",
+    "agents/gemini-worker.md",
+    "agents/sol-expert.md",
+    "rules/omfiles.md",
+    "workflows/normal.md",
+    "workflows/deep.md",
+    "workflows/cyber.md",
+    "workflows/code.md",
+    "config.example.yml",
+    "models.example.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "omp": {
+    "extensions": ["./src/index.js"]
+  }
+}

@@ -1,6 +1,8 @@
 # Optional: merge into the active profile's models.yml for cyber-red.
+# Installing or importing omp-omfiles never applies this configuration automatically.
 # apiKey names an environment variable. Never replace it with a committed secret.
 # Provider endpoint, model ID, and advertised limits must match your own access.
+# Authentication and custom provider definitions remain user-managed.
 providers:
   abliteration:
     baseUrl: https://api.abliteration.ai/v1
